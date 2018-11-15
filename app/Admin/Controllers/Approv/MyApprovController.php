@@ -28,6 +28,11 @@ class MyApprovController extends Controller{
         });
     }
 
+
+    public function test(){
+        return "测试";
+    }
+
     public function grid()
     {
         return Admin::grid(ApprovRecord::class,function(Grid $grid){
