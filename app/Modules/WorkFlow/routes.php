@@ -39,4 +39,9 @@ Route::group([
     // 用户发放邀请码
     $router->get('workflow.sendInvCode','UserUpgradeController@SendInvCode');
 
+    //商品审核通过examine_refuse
+    $router->get('workflow.goods_examine_pass','GoodsExamineController@goodsExaminePass');
+    //商品审核拒绝
+    $router->get('workflow.goods_examine_refuse','GoodsExamineController@goodsExamineRefuse');
+
 });

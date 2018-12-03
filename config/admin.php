@@ -10,12 +10,12 @@ return [
     /*
      * Logo in admin panel header.
      */
-    'logo' => '<b>Mall</b> 系统',
+    'logo' => '<b>General</b> 系统',
 
     /*
      * Mini-logo in admin panel header.
      */
-    'logo-mini' => '<b>Mall系统</b>',
+    'logo-mini' => '<b>General系统</b>',
 
     /*
      * Route configuration.

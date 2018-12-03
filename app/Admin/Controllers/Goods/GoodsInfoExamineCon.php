@@ -13,7 +13,7 @@ use Encore\Admin\Layout\Content;
 use App\Admin\Fields\ExtendButton;
 
 
-class GoodsInfoCon extends Controller
+class GoodsInfoExamineCon extends Controller
 {
     use ModelForm;
     public function index()
@@ -56,12 +56,13 @@ class GoodsInfoCon extends Controller
             $grid->exporter(new ExportTaskRecord());
 
             $grid->model()
+                ->where('status',30)
                 ->orderBy('create_time', 'desc');
 
             $grid->column('id','ID');
             $grid->column('store_id','店铺名称');
             $grid->column('name','名字')->sortable()->display(function ($user_name) {
-                return "<a href='/admin/goods/info/{$this->getKey()}' class=''><b>$user_name</b></a>";
+                return "<a href='/admin/goodsAdited/info/{$this->getKey()}' class=''><b>$user_name</b></a>";
             });
             $grid->column('introduce','简介');
             $grid->column('original_price','原价（元）')->sortable();
@@ -114,7 +115,7 @@ class GoodsInfoCon extends Controller
                 $arr = config('product.goods_status');
                 return $arr[$key];
             })->sortable();
-           $grid->column('describe','审核简介')->sortable();
+//            $grid->column('share_amount','分享量')->sortable();
 
             $grid->column('create_time','创建时间')->sortable();
             $grid->column('update_time','修改时间')->sortable();
@@ -266,9 +267,8 @@ class GoodsInfoCon extends Controller
     private function detail()
     {
         return Admin::form(GoodsInfo::class, function (Form $form) {
-            $form->tab('使用激活码审核', function (Form $form) {
 
-                $form->hidden('id','ID');
+            $form->hidden('id','ID');
 
             $form->tab('商品信息',function(Form $form){
                 $form->display('name','名字')->rules('required');
@@ -354,15 +354,20 @@ class GoodsInfoCon extends Controller
                     $form->id = ID();
                 }
             });
-            });
-
             $form->tools(function (Form\Tools $tools) {
                 $tools->add('');
                     $url = "/admin/workflow.goods_examine_pass";
                     $icon = "fa fa-check";
-                    $text = "重新提交审核";
+                    $text = "通过";
                     $id = "examine_pass";
                     $tools->add(new ExtendButton($url,$icon,$text,$id));
+
+                    $url = "/admin/workflow.goods_examine_refuse";
+                    $icon = "fa fa-times";
+                    $text = "拒绝";
+                    $id = "examine_refuse";
+                    $class = "btn btn-danger pull-left";
+                    $tools->add(new ExtendButton($url,$icon,$text,$id,$class));
             });
 
         });

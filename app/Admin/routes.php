@@ -102,7 +102,8 @@ Route::group([
     // =================================商品模块==========================================
     $router->resources([
         'goods/info' => 'Goods\\GoodsInfoCon',// 商品信息
-        'goodsorder/info' => 'Goods\\GoodsOrderController',// 商品订单信息
+        'goodsAdited/info' => 'Goods\\GoodsInfoExamineCon',// 商品待审核信息  
+        'goodsorder/info' => 'Goods\\GoodsOrderController',// 商品订单信息     
     ]);
 
     // =========================================================================
