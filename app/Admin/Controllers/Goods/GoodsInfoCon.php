@@ -59,7 +59,10 @@ class GoodsInfoCon extends Controller
                 ->orderBy('create_time', 'desc');
 
             $grid->column('id','ID');
-            $grid->column('store_id','店铺名称');
+            //store.name
+            $grid->column('store.name','店铺名称')->display(function($name){
+                return empty($name) ? '自营' : $name;                
+            });
             $grid->column('name','名字')->sortable()->display(function ($user_name) {
                 return "<a href='/admin/goods/info/{$this->getKey()}' class=''><b>$user_name</b></a>";
             });
@@ -84,9 +87,7 @@ class GoodsInfoCon extends Controller
             $grid->column('goods_class','活动商品类')->display(function($key){
                 $arr = [
                     '10'=>'普通商品',
-                    '20'=>'积分商品',
-                    '30'=>'团购商品',
-                    '40'=>'秒杀商品',
+                    '20'=>'积分商品'
                 ];
                 return $arr[$key];
             });
@@ -140,8 +141,6 @@ class GoodsInfoCon extends Controller
                         [
                             '10'=>'普通商品',
                             '20'=>'积分商品',
-                            '30'=>'团购商品',
-                            '40'=>'秒杀商品',
                         ]
                     );
                 $filter->equal('status','状态')
@@ -196,8 +195,6 @@ class GoodsInfoCon extends Controller
                     ->options([
                         '10'=>'普通商品',
                         '20'=>'积分商品',
-                        '30'=>'团购商品',
-                        '40'=>'秒杀商品',
                     ])->rules('required');
 
                 $form->select('from_way','来源方式')
@@ -272,6 +269,9 @@ class GoodsInfoCon extends Controller
                 $form->display('cost','成本（元）')->rules('required');
                 $form->display('promote_profit','推广分润（元）');
                 $form->display('integral','积分');
+                $form->display('store.name','店铺名称')->with(function($name){
+                    return empty($name) ? '自营' : $name;                
+                });
             });
             $form->tab('商品设置',function(Form $form){
                 $form->select('goods_type','商品类型')
@@ -287,8 +287,6 @@ class GoodsInfoCon extends Controller
                     ->options([
                         '10'=>'普通商品',
                         '20'=>'积分商品',
-                        '30'=>'团购商品',
-                        '40'=>'秒杀商品',
                     ])->rules('required');
 
                 $form->select('from_way','来源方式')

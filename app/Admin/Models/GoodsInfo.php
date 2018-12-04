@@ -13,4 +13,8 @@ class GoodsInfo extends Model
     public $timestamps = true;
     const CREATED_AT = 'create_time';
     const UPDATED_AT = 'update_time';
+
+    public function store(){
+        return $this->hasOne(Store::class,'id','store_id');
+    }
 }

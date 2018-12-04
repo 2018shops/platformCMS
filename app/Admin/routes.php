@@ -138,6 +138,11 @@ Route::group([
     $router->resources([
         'trans/present' => 'Trans\\PresentController',
     ]);
+    //店铺
+    $router->resources([
+        'store/storeinfo' => 'Store\\StoreInfoController',
+    ]);
+    
 
 
     // =================================资费通道模块================================
