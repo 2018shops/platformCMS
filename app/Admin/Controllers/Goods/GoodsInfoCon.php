@@ -214,12 +214,6 @@ class GoodsInfoCon extends Controller
                         '00'=>'不推荐',
                         '10'=>'推荐'
                     ])->rules('required');
-                $form->select('status','状态')
-                    ->options([
-                        '00'=>'下架',
-                        '10'=>'上架',
-                        '20'=>'未开售',
-                    ])->rules('required');
             });
             $form->tab('商品数据',function(Form $form){
                 $form->text('freight','运费')->rules('required');

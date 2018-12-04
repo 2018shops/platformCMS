@@ -31,7 +31,7 @@ class GoodsExamineService extends Service
         ];
     }
      /**
-      * @desc 圣品审核拒绝
+      * @desc 商品审核拒绝
       */
     public function goodsExamineRefuse(GoodsInfoRepo $repo,$request){
         $params = [
