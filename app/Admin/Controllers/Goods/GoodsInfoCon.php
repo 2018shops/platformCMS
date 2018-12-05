@@ -11,6 +11,7 @@ use Encore\Admin\Form;
 use App\Admin\Fields\ExcelExporter\ExportTaskRecord;
 use Encore\Admin\Layout\Content;
 use App\Admin\Fields\ExtendButton;
+use App\Modules\WorkFlow\WorkFlow;
 
 
 class GoodsInfoCon extends Controller
@@ -52,10 +53,14 @@ class GoodsInfoCon extends Controller
     public function grid()
     {
         return Admin::grid(GoodsInfo::class,function(Grid $grid) {
-
             $grid->exporter(new ExportTaskRecord());
-
+            $id = Admin::user()->id;
+            // $store =  WorkFlow::service('StoreService')
+            //     ->with('id',$id)
+            //     ->run('getStoreInfo');
+            // dd($store);
             $grid->model()
+                // ->where('id',$id)
                 ->orderBy('create_time', 'desc');
 
             $grid->column('id','ID');

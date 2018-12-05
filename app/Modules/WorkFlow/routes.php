@@ -44,4 +44,11 @@ Route::group([
     //商品审核拒绝
     $router->get('workflow.goods_examine_refuse','GoodsExamineController@goodsExamineRefuse');
 
+//店铺
+    //店铺审核通过
+    $router->get('store.store_pass','StoreController@storePass');
+    //店铺拒绝审核
+    $router->get('store.store_refuse','StoreController@storeRefuse');
+    //店铺强制禁用
+    $router->get('store.store_prohibit','StoreController@storeProhibit');
 });

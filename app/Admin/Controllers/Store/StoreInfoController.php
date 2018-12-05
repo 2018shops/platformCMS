@@ -83,6 +83,7 @@ class StoreInfoController extends Controller{
             $form->tab('基本信息',function(Form $form) {
                 $form->display('id','ID');
                 $form->hidden('id','ID');
+                $form->hidden('status','状态');
                 $form->display('name','店铺名称');
                 $form->display('tel','电话');
                 // $form->display('top_img','店铺图片');
@@ -91,8 +92,8 @@ class StoreInfoController extends Controller{
                 });
                 $form->display('store_desc','店铺描述');
                 $form->display('user_id','用户ID');
-                $form->display('status','用户ID');   
-                $form->display('status','微信头像')->with(function ($status){
+                
+                $form->display('status','店铺状态')->with(function ($status){
                     return config('store.status.'.$status);
                 });
             });
@@ -103,31 +104,30 @@ class StoreInfoController extends Controller{
                 $form->display('cafe_record','店铺评分');
                 $form->display('number_people','评级人数');
             });
-
-            $form->tools(function ($tools) {
-                
+            $form->disableSubmit();//隐藏保存按钮
+            $form->disableReset(); //去掉重置按钮
+            $form->tools(function ($tools) use($form) {
                 $tools->add('');
-                $url = "/admin/workflow.goods_examine_pass";
+                $url = "/admin/store.store_pass";
                 $icon = "fa fa-check";
                 $text = "通过审核";
-                $id = "examine_pass";
+                $id = "store_pass";
                 $tools->add(new ExtendButton($url,$icon,$text,$id));
 
-                $url = "/admin/workflow.goods_examine_pass";
+                $url = "/admin/store.store_refuse";
                 $icon = "fa fa-times";
                 $text = "拒绝审核";
-                $id = "examine_pass";
-                $tools->add(new ExtendButton($url,$icon,$text,$id));
+                $id = "store_refuse";
+                $class = "btn btn-danger";
+                $tools->add(new ExtendButton($url,$icon,$text,$id,$class));
 
-                $url = "/admin/workflow.goods_examine_pass";
+                $url = "/admin/store.store_prohibit";
                 $icon = "fa fa-times";
                 $text = "强制禁用";
-                $id = "examine_pass";
-                $tools->add(new ExtendButton($url,$icon,$text,$id));
+                $id = "store_prohibit";
+                $class = "btn btn-danger";
+                $tools->add(new ExtendButton($url,$icon,$text,$id,$class));
             });
-            // $form->tools(function (Form\Tools $tools) {
-               
-            // });
         });
     }
 }
