@@ -12,13 +12,14 @@ namespace App\Modules\WorkFlow\Service;
 use App\Common\Contracts\Service;
 use App\Modules\WorkFlow\Repository\StoreRepo;
 use App\Modules\WorkFlow\Repository\AdminUsersRepo;
-use App\Modules\WorkFlow\Repository\AdminRolesRepo;
+use App\Modules\WorkFlow\Repository\AdminRoleUsersRepo;
+use Illuminate\Support\Facades\Hash;
 
 class StoreService extends Service
 {
     public $user;
     public $roles;
-    public function __construct(AdminUsersRepo $user,AdminRolesRepo $roles){
+    public function __construct(AdminUsersRepo $user,AdminRoleUsersRepo $roles){
         $this->user = $user;
         $this->roles = $roles;
     }
@@ -33,10 +34,6 @@ class StoreService extends Service
      */
     public function storePass(StoreRepo $repo,$request)
     {
-        /**
-          Hash::make();
-            dd(brcypt('123123'));
-         */
         $params = [
             'status' => 10,
             'describe' => ''
@@ -45,6 +42,7 @@ class StoreService extends Service
         $repo->update($request['id'],$params);
         //新增管理员用
         $storeInfo = $repo->getStoreInfo($request);
+    
         $this->insertAdminUsers($storeInfo);
         return [
             'code'    => '0000',
@@ -54,9 +52,11 @@ class StoreService extends Service
 
     public function insertAdminUsers($storeInfo){
         $data = [
-            'username' => $storeInfo['tel'],
-            'password' => '123123',
-            'name' => $storeInfo['name']
+            'username' => $storeInfo['admin_user'],
+            'password' => Hash::make('123456'),
+            'name' => $storeInfo['name'],
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
         ];
         //保存后返回ID
         $id = $this->user->insert($data);
@@ -66,8 +66,8 @@ class StoreService extends Service
 
     public function insertAdminRoles($id){
         $data = [
-            'user_id' => '6',//店主角色ID
-            'role_id' => $id
+            'user_id' => $id,//店主角色ID
+            'role_id' => 6
         ];
         return $this->roles->insert($data);
     }
@@ -102,7 +102,7 @@ class StoreService extends Service
         ];
     }
 
-    public function getStoreInfoBAdminUser(StoreRepo $repo,$request){
-        return $repo->getStoreInfoBAdminUser($request);
+    public function getStoreInfoByAdminUser(StoreRepo $repo,$request){
+        return $repo->getStoreInfoByAdminUser($request);
     }
 }

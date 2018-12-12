@@ -17,6 +17,7 @@ use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\ModelForm;
 use Encore\Admin\Form;
 use Encore\Admin\Layout\Content;
+use App\Modules\WorkFlow\WorkFlow;
 
 class GoodsOrderController extends Controller
 {
@@ -33,6 +34,20 @@ class GoodsOrderController extends Controller
     public function grid()
     {
         return Admin::grid(GoodsOrder::class, function (Grid $grid){
+            $username = Admin::user()->username;
+            $store =  WorkFlow::service('StoreService')
+                ->with('admin_user',$username)
+                ->run('getStoreInfoByAdminUser');
+                
+            if($store){
+                $grid->model()
+                ->where('store_id','')
+                ->orderBy('create_time', 'desc');
+            }else{
+                $grid->model()
+                ->orderBy('create_time', 'desc');
+            }
+            
             $todayEnd= date('Y-m-d 23:59:59', strtotime("-1 day"));// 2018 1 23 2400
             $todaystart = date("Y-m-d 00:00:00",strtotime("-1 day"));//2018 1 23 0000
             $grid->disableCreateButton();

@@ -13,10 +13,12 @@ use App\Admin\Contracts\Facades\Admin;
 use App\Admin\Contracts\Grid;
 use App\Admin\Fields\ExcelOrder;
 use App\Admin\Models\GoodsOrder;
+use App\Admin\Models\GoodsInfo;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\ModelForm;
 use Encore\Admin\Form;
 use Encore\Admin\Layout\Content;
+use App\Modules\WorkFlow\WorkFlow;
 
 class GoodsOrderController extends Controller
 {
@@ -46,6 +48,22 @@ class GoodsOrderController extends Controller
             $grid->disableCreateButton();
             $grid->disableActions();
             $grid->disableExport();
+
+            $username = Admin::user()->username;
+            $store =  WorkFlow::service('StoreService')
+                ->with('admin_user',$username)
+                ->run('getStoreInfoByAdminUser');
+                
+            if($store){
+                $grid->model()
+                ->where('store_id',$store['id'])
+                ->orderBy('create_time', 'desc');
+            }else{
+                $grid->model()
+                ->orderBy('create_time', 'desc');
+            }
+
+
             $grid->model()->orderBy('create_time', 'desc');
 
             $grid->model()->where('goods_order.state', '!=', '50');
@@ -56,6 +74,9 @@ class GoodsOrderController extends Controller
             });
             $grid->column('goods_id','商品编号')->sortable();
             $grid->column('goods.name','商品名称')->sortable();
+            $grid->column('goods_id','店铺名称')->sortable()->display(function ($goods_id){
+                return GoodsInfo::getStoreName($goods_id);
+            });
             $grid->column('unit_price','单价')->sortable();
             $grid->column('total_price','总价')->sortable();
             $grid->column('promote_profit','推广分润')->sortable();

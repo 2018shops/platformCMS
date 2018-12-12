@@ -5,6 +5,7 @@ use App\Admin\Contracts\Facades\Admin;
 use App\Admin\Contracts\Grid;
 use App\Admin\Fields\CustomerButton;
 use App\Admin\Models\GoodsInfo;
+use App\Admin\Models\GoodsClassify;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\ModelForm;
 use Encore\Admin\Form;
@@ -54,19 +55,25 @@ class GoodsInfoCon extends Controller
     {
         return Admin::grid(GoodsInfo::class,function(Grid $grid) {
             $grid->exporter(new ExportTaskRecord());
-            $id = Admin::user()->id;
-            // $store =  WorkFlow::service('StoreService')
-            //     ->with('id',$id)
-            //     ->run('getStoreInfo');
-            // dd($store);
-            $grid->model()
-                // ->where('id',$id)
+            //根据后台登陆账号获取,店铺ID
+            $username = Admin::user()->username;
+            $store =  WorkFlow::service('StoreService')
+                ->with('admin_user',$username)
+                ->run('getStoreInfoByAdminUser');
+            
+            if($store){
+                $grid->model()
+                ->where('store_id',$store['id'])
                 ->orderBy('create_time', 'desc');
-
+            }else{
+                $grid->model()
+                ->orderBy('create_time', 'desc');
+            }
+            
             $grid->column('id','ID');
             //store.name
             $grid->column('store.name','店铺名称')->display(function($name){
-                return empty($name) ? '自营' : $name;                
+                return empty($name) ? '自营' : $name;
             });
             $grid->column('name','名字')->sortable()->display(function ($user_name) {
                 return "<a href='/admin/goods/info/{$this->getKey()}' class=''><b>$user_name</b></a>";
@@ -78,21 +85,15 @@ class GoodsInfoCon extends Controller
             $grid->column('promote_profit','推广分润（元）')->sortable();
             $grid->column('integral','积分')->sortable();
 
-            $grid->column('goods_type','商品类型')->display(function($key){
-                $arr = [
-                    '10'=>'食品生鲜',
-                    '20'=>'服装配饰',
-                    '30'=>'文体保健',
-                    '40'=>'家居日化',
-                    '50'=>'母婴专区',
-                    '60'=>'特色自营',
-                ];
-                return $arr[$key];
+            $grid->column('goods_type','商品分类')->display(function($id){
+                $ret = GoodsClassify::find($id);
+                return $ret['name'];
             });
+            
             $grid->column('goods_class','活动商品类')->display(function($key){
                 $arr = [
                     '10'=>'普通商品',
-                    '20'=>'积分商品'
+                    // '20'=>'积分商品'
                 ];
                 return $arr[$key];
             });
@@ -161,7 +162,18 @@ class GoodsInfoCon extends Controller
                         ['00'=>'自营','10'=>'拼多多']
                     );
             });
-
+            $grid->actions(function ($actions) use ($store) {
+                // 添加操作
+                // 当前行的数据数组
+                $actions->row;
+                //获取当前行主键值
+                $actions->getKey();
+                //$actions->prepend();
+                if(!$store){
+                    $actions->disableDelete();
+                    $actions->disableEdit();
+                }               
+            });
 
             $grid->tools(function ($tools) {
                 $tools->batch(function ($batch) {
@@ -174,40 +186,54 @@ class GoodsInfoCon extends Controller
     protected function form()
     {
         return Admin::form(GoodsInfo::class, function (Form $form) {
-
+            
             $form->hidden('id','ID');
-
+            $form->hidden('store_id','ID');
             $form->tab('商品信息',function(Form $form){
                 $form->text('name','名字')->rules('required');
                 $form->text('introduce','简介')->rules('required');
                 $form->text('original_price','原价（元）');
                 $form->text('price','价格（元）')->rules('required');
-                $form->text('cost','成本（元）')->rules('required');
-                $form->text('promote_profit','推广分润（元）');
-                $form->text('integral','积分');
+                // $form->text('cost','成本（元）')->rules('required');
+                // $form->text('promote_profit','推广分润（元）');
+                // $form->text('integral','积分');
             });
             $form->tab('商品设置',function(Form $form){
-                $form->select('goods_type','商品类型')
-                    ->options([
-                        '10'=>'食品生鲜',
-                        '20'=>'服装配饰',
-                        '30'=>'文体保健',
-                        '40'=>'家居日化',
-                        '50'=>'母婴专区',
-                        '60'=>'特色自营',
-                    ])->rules('required');
-                $form->select('goods_class','活动商品类')
-                    ->options([
-                        '10'=>'普通商品',
-                        '20'=>'积分商品',
-                    ])->rules('required');
+                // $form->select('goods_type','商品类型')
+                //     ->options([
+                //         '10'=>'食品生鲜',
+                //         '20'=>'服装配饰',
+                //         '30'=>'文体保健',
+                //         '40'=>'家居日化',
+                //         '50'=>'母婴专区',
+                //         '60'=>'特色自营',
+                //     ])->rules('required');
 
-                $form->select('from_way','来源方式')
-                    ->options([
-                        '00'=>'自营',
-                        '10'=>'拼多多',
-                    ])->rules('required');
-                $form->text('url','外部商品链接');
+            // $form->select('goods_type','商品分类')
+            //     ->options(function($name){
+            //         $classify = GoodsClassify::find($name);
+            //         if($classify) return [$classify->id => $classify->name];
+            //     })
+            //     ->ajax('/admin/api/getGoodsClassify')->rules('required');
+
+            $form->select('goods_type','商品分类')
+                ->options(function($id){
+                    return GoodsClassify::getGoodsClassifyList($id);
+                    // admin_base_path('/admin/api/getGoodsClassify');
+                });
+
+                // $form->select('goods_class','活动商品类')
+                //     ->options([
+                //         '10'=>'普通商品',
+                //         '20'=>'积分商品',
+                //     ])->rules('required');
+
+                // $form->select('from_way','来源方式')
+                //     ->options([
+                //         '00'=>'自营',
+                //         '10'=>'拼多多',
+                //     ])->rules('required');
+                // $form->text('url','外部商品链接');
 
                 $form->text('sort','商品排序');
 
@@ -219,9 +245,9 @@ class GoodsInfoCon extends Controller
             });
             $form->tab('商品数据',function(Form $form){
                 $form->text('freight','运费')->rules('required');
-                $form->text('sales','销量')->rules('required');
-                $form->text('see','浏览量');
-                $form->text('like','点赞/收藏');
+                // $form->text('sales','销量')->rules('required');
+                // $form->text('see','浏览量');
+                // $form->text('like','点赞/收藏');
 
                 $form->text('supplier','供货商');
 
@@ -252,7 +278,13 @@ class GoodsInfoCon extends Controller
             $form->saving(function (Form $form) {
                 if(!$form->id){
                     $form->id = ID();
+                    $username = Admin::user()->username;
+                    $store =  WorkFlow::service('StoreService')
+                        ->with('admin_user',$username)
+                        ->run('getStoreInfoByAdminUser');
+                    $form->store_id = $store['id'];
                 }
+                
             });
             $form->saved(function (Form $form) {
             });
@@ -361,6 +393,8 @@ class GoodsInfoCon extends Controller
                     $id = "examine_pass";
                     $tools->add(new ExtendButton($url,$icon,$text,$id));
             });
+            $form->disableSubmit();//隐藏保存按钮
+            $form->disableReset(); //去掉重置按钮
 
         });
     }

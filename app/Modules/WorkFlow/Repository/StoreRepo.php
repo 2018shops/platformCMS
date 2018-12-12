@@ -20,10 +20,20 @@ class StoreRepo extends Repository
         $this->model = $model;
     }
 
+    //根据ID,获取ID获取店铺信息
     public function getStoreInfo($request){
         return optional($this->model
-            ->select('id','name','tel')
+            ->select('id','name','admin_user')
             ->where('id',$request['id'])
+            ->first())
+            ->toArray();
+    }
+
+    //更具后台登陆账号,获取店铺信息
+    public function getStoreInfoByAdminUser($request){
+        return optional($this->model
+            ->select('id','name','admin_user')
+            ->where('admin_user',$request['admin_user'])
             ->first())
             ->toArray();
     }

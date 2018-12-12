@@ -43,6 +43,7 @@ Route::group([
     $router->get('workflow.goods_examine_pass','GoodsExamineController@goodsExaminePass');
     //商品审核拒绝
     $router->get('workflow.goods_examine_refuse','GoodsExamineController@goodsExamineRefuse');
+    
 
 //店铺
     //店铺审核通过

@@ -104,6 +104,7 @@ Route::group([
         'goods/info' => 'Goods\\GoodsInfoCon',// 商品信息
         'goodsAdited/info' => 'Goods\\GoodsInfoExamineCon',// 商品待审核信息  
         'goodsorder/info' => 'Goods\\GoodsOrderController',// 商品订单信息     
+        'goodsclassify/info' => 'Goods\\GoodsClassifyController',// 商品分类 
     ]);
 
     // =========================================================================
@@ -141,6 +142,7 @@ Route::group([
     //店铺
     $router->resources([
         'store/storeinfo' => 'Store\\StoreInfoController',
+        'store/storedetails' => 'Store\\StoreDetailsController',
     ]);
     
 
@@ -248,6 +250,8 @@ Route::group([
     //审批详情
     $router->get('/api/approv','Api\\Approv@approvDetails');
     $router->get('/api/postapi','Api\\Curl@postApi');
+    //获取商品分类
+    $router->get('/api/getGoodsClassify','Api\\GoodsClassifyApi@getGoodsClassify');
 
 });
 

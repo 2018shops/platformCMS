@@ -11,9 +11,6 @@ namespace App\Admin\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AdminRoles extends Model{
-
-
-    protected $table = "admin_roles";
-
+class AdminRoleUsers extends Model{
+    protected $table = "admin_role_users";
 }
