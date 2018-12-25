@@ -293,11 +293,8 @@ class GoodsInfoCon extends Controller
     private function detail()
     {
         return Admin::form(GoodsInfo::class, function (Form $form) {
-            $form->tab('使用激活码审核', function (Form $form) {
-
-                $form->hidden('id','ID');
-
             $form->tab('商品信息',function(Form $form){
+                $form->hidden('id','ID');
                 $form->display('name','名字')->rules('required');
                 $form->display('introduce','简介')->rules('required');
                 $form->display('original_price','原价（元）');
@@ -345,7 +342,7 @@ class GoodsInfoCon extends Controller
             $form->tab('商品数据',function(Form $form){
                 $form->display('freight','运费')->rules('required');
 //                $form->display('sales','销量')->rules('required');
-//                $form->display('see','浏览量'); 
+//                $form->display('see','浏览量');
 //                $form->display('like','点赞/收藏');
 
                 $form->display('supplier','供货商');
@@ -377,7 +374,6 @@ class GoodsInfoCon extends Controller
                 if(!$form->id){
                     $form->id = ID();
                 }
-            });
             });
 
             $form->tools(function (Form\Tools $tools) {
