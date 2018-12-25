@@ -345,7 +345,7 @@ class GoodsInfoCon extends Controller
             $form->tab('商品数据',function(Form $form){
                 $form->display('freight','运费')->rules('required');
 //                $form->display('sales','销量')->rules('required');
-//                $form->display('see','浏览量');
+//                $form->display('see','浏览量'); 
 //                $form->display('like','点赞/收藏');
 
                 $form->display('supplier','供货商');
