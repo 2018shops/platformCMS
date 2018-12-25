@@ -60,16 +60,16 @@ class GoodsInfoCon extends Controller
             $store =  WorkFlow::service('StoreService')
                 ->with('admin_user',$username)
                 ->run('getStoreInfoByAdminUser');
-            
+
             if($store){
                 $grid->model()
-                ->where('store_id',$store['id'])
-                ->orderBy('create_time', 'desc');
+                    ->where('store_id',$store['id'])
+                    ->orderBy('create_time', 'desc');
             }else{
                 $grid->model()
-                ->orderBy('create_time', 'desc');
+                    ->orderBy('create_time', 'desc');
             }
-            
+
             $grid->column('id','ID');
             //store.name
             $grid->column('store.name','店铺名称')->display(function($name){
@@ -81,21 +81,20 @@ class GoodsInfoCon extends Controller
             $grid->column('introduce','简介');
             $grid->column('original_price','原价（元）')->sortable();
             $grid->column('price','价格（元）')->sortable();
-            $grid->column('cost','成本（元）')->sortable();
-            $grid->column('promote_profit','推广分润（元）')->sortable();
-            $grid->column('integral','积分')->sortable();
+
+//            $grid->column('integral','积分')->sortable();
 
             $grid->column('goods_type','商品分类')->display(function($id){
                 $ret = GoodsClassify::find($id);
                 return $ret['name'];
             });
-            
+
             $grid->column('goods_class','活动商品类')->display(function($key){
                 $arr = [
                     '10'=>'普通商品',
                     // '20'=>'积分商品'
                 ];
-                return $arr[$key];
+                return $arr[$key] ?? '';
             });
 
             /*
@@ -146,7 +145,7 @@ class GoodsInfoCon extends Controller
                     ->select(
                         [
                             '10'=>'普通商品',
-                            '20'=>'积分商品',
+//                            '20'=>'积分商品',
                         ]
                     );
                 $filter->equal('status','状态')
@@ -303,35 +302,31 @@ class GoodsInfoCon extends Controller
                 $form->display('introduce','简介')->rules('required');
                 $form->display('original_price','原价（元）');
                 $form->display('price','价格（元）')->rules('required');
-                $form->display('cost','成本（元）')->rules('required');
-                $form->display('promote_profit','推广分润（元）');
-                $form->display('integral','积分');
+//                $form->display('cost','成本（元）')->rules('required');
+//                $form->display('promote_profit','推广分润（元）');
+//                $form->display('integral','积分');
                 $form->display('store.name','店铺名称')->with(function($name){
                     return empty($name) ? '自营' : $name;                
                 });
             });
             $form->tab('商品设置',function(Form $form){
-                $form->select('goods_type','商品类型')
-                    ->options([
-                        '10'=>'食品生鲜',
-                        '20'=>'服装配饰',
-                        '30'=>'文体保健',
-                        '40'=>'家居日化',
-                        '50'=>'母婴专区',
-                        '60'=>'特色自营',
-                    ])->rules('required');
+                $form->select('goods_type','商品分类')
+                    ->options(function($id){
+                        return GoodsClassify::getGoodsClassifyList($id);
+                    });
+
                 $form->select('goods_class','活动商品类')
                     ->options([
                         '10'=>'普通商品',
-                        '20'=>'积分商品',
+//                        '20'=>'积分商品',
                     ])->rules('required');
 
-                $form->select('from_way','来源方式')
-                    ->options([
-                        '00'=>'自营',
-                        '10'=>'拼多多',
-                    ])->rules('required');
-                $form->display('url','外部商品链接');
+//                $form->select('from_way','来源方式')
+//                    ->options([
+//                        '00'=>'自营',
+////                        '10'=>'拼多多',
+//                    ])->rules('required');
+//                $form->display('url','外部商品链接');
 
                 $form->display('sort','商品排序');
 
@@ -340,18 +335,18 @@ class GoodsInfoCon extends Controller
                         '00'=>'不推荐',
                         '10'=>'推荐'
                     ])->rules('required');
-                $form->select('status','状态')
-                    ->options([
-                        '00'=>'下架',
-                        '10'=>'上架',
-                        '20'=>'未开售',
-                    ])->rules('required');
+//                $form->select('status','状态')
+//                    ->options([
+//                        '00'=>'下架',
+//                        '10'=>'上架',
+//                        '20'=>'未开售',
+//                    ])->rules('required');
             });
             $form->tab('商品数据',function(Form $form){
                 $form->display('freight','运费')->rules('required');
-                $form->display('sales','销量')->rules('required');
-                $form->display('see','浏览量');
-                $form->display('like','点赞/收藏');
+//                $form->display('sales','销量')->rules('required');
+//                $form->display('see','浏览量');
+//                $form->display('like','点赞/收藏');
 
                 $form->display('supplier','供货商');
 
